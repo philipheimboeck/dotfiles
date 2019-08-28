@@ -1,13 +1,13 @@
-#!/usr/bin/env fish
+#!/usr/bin/env zsh
 
-cd (dirname (status -f))
+cd "$(dirname "$0")"
 pwd
 
 echo 'Creating Symlinks'
 
-echo '~/.config/fish/config.fish'
-ln -s (pwd)/fish/config.fish ~/.config/fish/config.fish
+echo '~/.config/zsh/zshrc.zsh'
+ln -s $(pwd)/zsh/.zshrc ~/.zshrc
 
 echo '~/.gitconfig'
-ln -s (pwd)/git/.gitconfig ~/.gitconfig
+ln -s $(pwd)/git/.gitconfig ~/.gitconfig
 
