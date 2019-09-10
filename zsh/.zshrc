@@ -1,3 +1,11 @@
+# ZSH Config
+HISTSIZE=5000
+HISTFILE=~/.zsh_history
+SAVEHIST=5000
+setopt    appendhistory     #Append history to the history file (no overwriting)
+setopt    sharehistory      #Share history across terminals
+setopt    incappendhistory  #Immediately append to the history file, not just when a term is killed
+
 # Load VCS information
 autoload -Uz vcs_info
 precmd() { vcs_info }
