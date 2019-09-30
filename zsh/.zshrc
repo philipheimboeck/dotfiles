@@ -26,8 +26,9 @@ export SSH_AUTH_SOCK="${HOME}/.gnupg/S.gpg-agent.ssh"
 gpgconf --launch gpg-agent
 
 # Plugins
-ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#555555"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=2"
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_USE_ASYNC=1
 
 source ~/.dotfiles/zsh/antigen/antigen.zsh
 antigen bundle zsh-users/zsh-autosuggestions
@@ -39,3 +40,7 @@ if [ -x "$(which thefuck)" ] ; then
 else    
     echo "thefuck not found"
 fi
+
+# NVM
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
