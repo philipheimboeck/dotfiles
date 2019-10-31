@@ -20,6 +20,12 @@ PROMPT='${PWD/#$HOME/~} ${vcs_info_msg_0_} > '
 # Keys
 bindkey "^[[3~" delete-char
 
+# Machine - Imports
+OS_FILE="$HOME/.dotfiles/zsh/$(uname -s)/.zshrc"
+if [ -f "$OS_FILE" ]; then
+  source $OS_FILE
+fi
+
 # Yubikey SSH
 export GPG_TTY="$(tty)"
 export SSH_AUTH_SOCK="${HOME}/.gnupg/S.gpg-agent.ssh"
