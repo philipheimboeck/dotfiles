@@ -1,3 +1,5 @@
+zmodload zsh/zprof
+
 # ZSH Config
 HISTSIZE=5000
 HISTFILE=~/.zsh_history
@@ -25,28 +27,27 @@ OS_FILE="$HOME/.dotfiles/zsh/$(uname -s)/.zshrc"
 if [ -f "$OS_FILE" ]; then
   source $OS_FILE
 fi
+source "$HOME/.dotfiles/zsh/git-aliases"
 
-# Yubikey SSH
-export GPG_TTY="$(tty)"
-export SSH_AUTH_SOCK="${HOME}/.gnupg/S.gpg-agent.ssh"
-gpgconf --launch gpg-agent
 
 # Plugins
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=2"
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_USE_ASYNC=1
+export NVM_LAZY_LOAD=true
+export NVM_DIR="$HOME/.nvm"
 
 source ~/.dotfiles/zsh/antigen/antigen.zsh
 antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle lukechilds/zsh-nvm
+antigen bundle laggardkernel/zsh-thefuck
 antigen apply
 
 
 if [ -x "$(which thefuck)" ] ; then
-    eval $(thefuck --alias)
+    #eval $(thefuck --alias) # Loaded via plugin now
 else    
-    echo "thefuck not found"
+    echo "thefuck not found. Please install first: https://github.com/nvbn/thefuck#installation"
 fi
 
-# NVM
-export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm
+

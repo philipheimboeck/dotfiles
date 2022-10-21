@@ -16,3 +16,5 @@
   prompt = false
 [diff]
   tool = Kaleidoscope
+[init]
+	defaultBranch = main

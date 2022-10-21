@@ -1,0 +1,18 @@
+
+alias g="git"
+alias ga="git add"
+
+alias gs="git status"
+alias gd="git diff"
+alias gdca="git diff --cached"
+
+alias gco="git checkout"
+alias gcob="git checkout -b"
+
+alias gc="git commit -v"
+alias gcm="git commit -v -m"
+
+alias gf="git fetch --all --prune"
+
+alias gp="git pull"
+alias gpr="git pull --rebase"
