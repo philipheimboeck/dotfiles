@@ -14,5 +14,10 @@ alias gcm="git commit -v -m"
 
 alias gf="git fetch --all --prune"
 
-alias gp="git pull"
-alias gpr="git pull --rebase"
+alias gp="git pull --rebase"
+alias gps="git stash && git pull --rebase && git stash pop"
+
+alias gpu="git push"
+alias gpuo="git push -u origin HEAD"
+
+alias gm="git merge --ff-only"

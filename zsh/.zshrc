@@ -41,6 +41,7 @@ source ~/.dotfiles/zsh/antigen/antigen.zsh
 antigen bundle zsh-users/zsh-autosuggestions
 antigen bundle lukechilds/zsh-nvm
 antigen bundle laggardkernel/zsh-thefuck
+antigen bundle rupa/z
 antigen apply
 
 
