@@ -1,0 +1,7 @@
+rupa/z
+zsh-users/zsh-autosuggestions
+zsh-users/zsh-completions
+lukechilds/zsh-nvm
+laggardkernel/zsh-thefuck
+
+sindresorhus/pure

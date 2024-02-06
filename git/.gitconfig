@@ -5,3 +5,5 @@
 	default = simple
 [init]
 	defaultBranch = main
+[rebase]
+        autoStash = true
