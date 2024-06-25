@@ -31,6 +31,12 @@ if [ ! -f "$HOME/.gitconfig" ]; then
    ln -s $(pwd)/git/.gitconfig ~/.gitconfig
 fi
 
+echo '  * ~/.config/nvim'
+if [ ! -f "$HOME/.config/nvim" ]; then
+   ln -s $(pwd)/nvim ~/.config/nvim
+fi
+
+
 echo ""
 
 ## OSX
