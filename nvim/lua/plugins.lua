@@ -16,28 +16,161 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
+    {
+        "ellisonleao/dotenv.nvim",
+        config = function()
+            require('dotenv').setup({
+                enable_on_load = true,
+                verbose = false,
+            })
+        end
+    },
+    {
+        "folke/lazydev.nvim",
+        ft = "lua", -- only load on lua files
+        opts = {
+            library = {
+                -- See the configuration section for more details
+                -- Load luvit types when the `vim.uv` word is found
+                { path = "luvit-meta/library", words = { "vim%.uv" } },
+            },
+        },
+    },
+    { "Bilal2453/luvit-meta",                        lazy = true }, -- optional `vim.uv` typings
+    {                                                               -- optional completion source for require statements and module annotations
+        "hrsh7th/nvim-cmp",
+        opts = function(_, opts)
+            opts.sources = opts.sources or {}
+            table.insert(opts.sources, {
+                name = "lazydev",
+                group_index = 0, -- set group index to 0 to skip loading LuaLS completions
+            })
+        end,
+    },
+    "phpactor/phpactor",
+    {
+        "j-hui/fidget.nvim",
+    },
     "easymotion/vim-easymotion",
-    "tanvirtin/monokai.nvim",
+    {
+        "norcalli/nvim-colorizer.lua",
+        config = function()
+            require('colorizer').setup();
+        end
+    },
+    -- Subword motions
+    {
+        "chrisgrieser/nvim-spider",
+        keys = {
+            {
+                "w",
+                "<cmd>lua require('spider').motion('w')<CR>",
+                mode = { "n", "o", "x" },
+            },
+            {
+                "e",
+                "<cmd>lua require('spider').motion('e')<CR>",
+                mode = { "n", "o", "x" },
+            },
+            {
+                "b",
+                "<cmd>lua require('spider').motion('b')<CR>",
+                mode = { "n", "o", "x" },
+            }
+        },
+        config = function()
+            -- Map original word motion (w) to W
+            vim.keymap.set({ 'n', 'o', 'x' }, 'W', 'w', { noremap = true })
+
+            require('spider').setup({
+                skipInsignificantPunctuation = false
+            })
+        end
+    },
     {
         'windwp/nvim-autopairs',
         event = "InsertEnter",
         config = true
-        -- use opts = {} for passing setup options
+        -- use opts = {} for../../colors/ passing setup options
         -- this is equalent to setup({}) function
     },
-    -- init.lua:
     {
         'nvim-telescope/telescope.nvim',
         tag = '0.1.8', -- or branch = '0.1.x',
-        dependencies = { 'nvim-lua/plenary.nvim' },
+        dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope-smart-history.nvim' },
         config = function()
+            local telescope = require('telescope')
+            telescope.setup({
+                defaults = {
+                    -- configure to use ripgrep
+                    vimgrep_arguments = {
+                        "rg",
+                        "--follow",        -- Follow symbolic links
+                        "--hidden",        -- Search for hidden files
+                        "--no-heading",    -- Don't group matches by each file
+                        "--with-filename", -- Print the file path with the matched lines
+                        "--line-number",   -- Show line numbers
+                        "--column",        -- Show column numbers
+                        "--smart-case",    -- Smart case search
+                        "-u",              -- Disable .gitignore handling
+
+
+                        -- Exclude some patterns from search
+                        "--glob=!**/.git/*",
+                        "--glob=!**/.idea/*",
+                        "--glob=!**/.vscode/*",
+                        "--glob=!**/build/*",
+                        "--glob=!**/dist/*",
+                        "--glob=!**/yarn.lock",
+                        "--glob=!**/package-lock.json",
+                        "--glob=!**/node_modules/*",
+                        "--glob=!**/vendor/*",
+                    },
+                    history = {
+                        path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
+                        limit = 100,
+                    }
+                },
+                pickers = {
+                    find_files = {
+                        hidden = true,
+                        find_command = {
+                            "rg",
+                            "--files",
+                            "--hidden",
+                            "--glob=!**/.git/*",
+                            "--glob=!**/.idea/*",
+                            "--glob=!**/.vscode/*",
+                            "--glob=!**/build/*",
+                            "--glob=!**/dist/*",
+                            "--glob=!**/yarn.lock",
+                            "--glob=!**/package-lock.json",
+                            "--glob=!**/node_modules/*",
+                            "--glob=!**/vendor/*",
+                        },
+                    }
+                },
+                mappings = {
+                    i = {
+                        ["<M-Down>"] = require('telescope.actions').cycle_history_next,
+                        ["<M-Up>"] = require('telescope.actions').cycle_history_prev,
+                    }
+                }
+            })
             local builtin = require('telescope.builtin')
+            vim.keymap.set('n', '<leader>F', builtin.resume, {})
             vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+            vim.keymap.set('n', '<leader>fF', builtin.oldfiles, {})
             vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+            vim.keymap.set('n', '<leader>fG', builtin.git_status, {})
+            vim.keymap.set('n', '<leader>fd', builtin.lsp_references, {})
             vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
             vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+
+            require('telescope').load_extension('smart_history')
         end
     },
+    { 'nvim-telescope/telescope-smart-history.nvim', dependencies = { 'kkharji/sqlite.lua' } },
     {
         'nvim-lualine/lualine.nvim',
         config = function()
@@ -73,36 +206,54 @@ require("lazy").setup({
     {
         "nvim-treesitter/nvim-treesitter",
         build = ":TSUpdate",
-        config = function()
-            local configs = require("nvim-treesitter.configs")
-
-            configs.setup({
-                ensure_installed = {
-                    "bash",
-                    "css",
-                    "diff",
-                    "dockerfile",
-                    "dot",
-                    "git_config",
-                    "git_rebase",
-                    "gitcommit",
-                    "gitignore",
-                    "html",
-                    "lua",
-                    "vim",
-                    "vimdoc",
-                    "query",
-                    "php",
-                    "javascript",
-                    "typescript",
-                    "sql",
-                    "yaml",
-                    "xml",
+        opts = {
+            ensure_installed = {
+                "bash",
+                "blade",
+                "css",
+                "diff",
+                "dockerfile",
+                "dot",
+                "git_config",
+                "git_rebase",
+                "gitcommit",
+                "gitignore",
+                "html",
+                "lua",
+                "vim",
+                "vimdoc",
+                "query",
+                "scss",
+                "php",
+                "javascript",
+                "typescript",
+                "sql",
+                "yaml",
+                "vue",
+                "xml",
+            },
+            sync_install = false,
+            highlight = { enable = true, additional_vim_regex_highlighting = false },
+            indent = { enable = true },
+        },
+        config = function(_, opts)
+            local parser_config = require("nvim-treesitter.parsers").get_parser_configs()
+            parser_config.blade = {
+                install_info = {
+                    url = "https://github.com/EmranMR/tree-sitter-blade",
+                    files = { "src/parser.c" },
+                    branch = "main",
                 },
-                sync_install = false,
-                highlight = { enable = true, additional_vim_regex_highlighting = false },
-                indent = { enable = true },
+                filetype = "blade"
+            }
+
+            vim.filetype.add({
+                pattern = {
+                    ['.*%.blade%.php'] = 'blade',
+                }
             })
+
+            require('nvim-treesitter.configs').setup(opts)
         end
     },
     {
@@ -114,8 +265,48 @@ require("lazy").setup({
             require('gitsigns').setup({
                 current_line_blame = true,
                 on_attach = function()
-                    vim.keymap.set('n', ']c', '<cmd>Gitsign next_hunk<cr>')
-                    vim.keymap.set('n', '[c', '<cmd>Gitsign prev_hunk<cr>')
+                    local gitsigns = require('gitsigns')
+
+                    local function map(mode, l, r, opts)
+                        opts = opts or {}
+                        opts.buffer = bufnr
+                        vim.keymap.set(mode, l, r, opts)
+                    end
+
+                    -- Navigation
+                    map('n', ']c', function()
+                        if vim.wo.diff then
+                            vim.cmd.normal({ ']c', bang = true })
+                        else
+                            gitsigns.nav_hunk('next')
+                        end
+                    end)
+
+                    map('n', '[c', function()
+                        if vim.wo.diff then
+                            vim.cmd.normal({ '[c', bang = true })
+                        else
+                            gitsigns.nav_hunk('prev')
+                        end
+                    end)
+
+                    -- Actions
+                    map('n', '<leader>hs', gitsigns.stage_hunk)
+                    map('n', '<leader>hr', gitsigns.reset_hunk)
+                    map('v', '<leader>hs', function() gitsigns.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
+                    map('v', '<leader>hr', function() gitsigns.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
+                    map('n', '<leader>hS', gitsigns.stage_buffer)
+                    map('n', '<leader>hu', gitsigns.undo_stage_hunk)
+                    map('n', '<leader>hR', gitsigns.reset_buffer)
+                    map('n', '<leader>hp', gitsigns.preview_hunk)
+                    map('n', '<leader>hb', function() gitsigns.blame_line { full = true } end)
+                    map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
+                    map('n', '<leader>hd', gitsigns.diffthis)
+                    map('n', '<leader>hD', function() gitsigns.diffthis('~') end)
+                    map('n', '<leader>td', gitsigns.toggle_deleted)
+
+                    -- Text object
+                    map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
                 end
             });
         end
@@ -138,6 +329,7 @@ require("lazy").setup({
     { "hrsh7th/cmp-buffer",                  dependencies = { "nvim-cmp" } }, -- buffer auto-completion
     { "hrsh7th/cmp-path",                    dependencies = { "nvim-cmp" } }, -- path auto-completion
     { "hrsh7th/cmp-cmdline",                 dependencies = { "nvim-cmp" } }, -- cmdline auto-completion
+    { "saadparwaiz1/cmp_luasnip" },
     -- {
     --     -- Code completion with AI
     --     'tzachar/cmp-ai',
@@ -168,9 +360,27 @@ require("lazy").setup({
     {
         "L3MON4D3/LuaSnip",
         version = "v2.*",
+        dependencies = { "rafamadriz/friendly-snippets" },
+        config = function()
+            require("luasnip.loaders.from_vscode").lazy_load()
+        end
     },
     -- LSP manager
-    "williamboman/mason.nvim",
+    {
+        "williamboman/mason.nvim",
+        config = function()
+            require('mason').setup({
+                ui = {
+                    icons = {
+                        package_installed = "✓",
+                        package_pending = "➜",
+                        package_uninstalled = "✗"
+                    }
+                }
+
+            })
+        end
+    },
     "williamboman/mason-lspconfig.nvim",
     "neovim/nvim-lspconfig",
     -- File Tree
@@ -191,10 +401,20 @@ require("lazy").setup({
                     filtered_items = {
                         visible = true,
                     },
+                    follow_current_file = { enabled = true },
+                    use_libuv_file_watcher = true,
                 },
-
                 buffers = { follow_current_file = { enabled = true } }
             })
+        end,
+    },
+    {
+        's1n7ax/nvim-window-picker',
+        name = 'window-picker',
+        event = 'VeryLazy',
+        version = '2.*',
+        config = function()
+            require 'window-picker'.setup()
         end,
     },
     {
@@ -206,6 +426,12 @@ require("lazy").setup({
                 html = { 'tidy' },
                 php = { 'phpstan' },
                 typescript = { 'eslint' },
+            }
+            require('lint').linters.phpstan.args = {
+                'analyze',
+                '--error-format=json',
+                '--no-progress',
+                '--memory-limit=-1',
             }
             vim.api.nvim_create_autocmd({ "BufWritePost" }, {
                 callback = function()
@@ -225,7 +451,7 @@ require("lazy").setup({
 
             conform.setup({
                 formatters_by_ft = {
-                    php = { "pint" },
+                    php = { "php_cs_fixer" },
                 },
                 format_on_save = {
                     lsp_fallback = true,
@@ -234,7 +460,7 @@ require("lazy").setup({
                 },
                 notify_on_error = true,
                 formatters = {
-                    pint = {
+                    php_cs_fixer = {
                         condition = function(self, ctx)
                             return not vim.fs.basename(ctx.filename):match('texts.php$')
                         end,
@@ -243,35 +469,23 @@ require("lazy").setup({
             })
         end,
     },
-    -- Useful plugin to show you pending keybinds.
-    {
-        'folke/which-key.nvim',
-        event = 'VimEnter', -- Sets the loading event to 'VimEnter'
-        config = function() -- This is the function that runs, AFTER loading
-            require('which-key').setup()
-
-            -- Document existing key chains
-            require('which-key').register {
-                ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-                ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-                ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-                ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-                ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
-                ['<leader>t'] = { name = '[T]oggle', _ = 'which_key_ignore' },
-                ['<leader>h'] = { name = 'Git [H]unk', _ = 'which_key_ignore' },
-            }
-            -- visual mode
-            require('which-key').register({
-                ['<leader>h'] = { 'Git [H]unk' },
-            }, { mode = 'v' })
-        end,
-    },
     {
         "iamcco/markdown-preview.nvim",
         cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
         ft = { "markdown" },
         build = function() vim.fn["mkdp#util#install"]() end,
     },
+    { "RRethy/vim-illuminate" },
+    {
+        "tpope/vim-fugitive",
+        dependencies = { "shumphrey/fugitive-gitlab.vim" },
+        config = function()
+            vim.cmd([[
+              let g:fugitive_gitlab_domains = ['git.abaservices.ch']
+            ]])
+        end,
+    },
     -- Seperate plugin files
     require 'plugins.dap',
+    -- require 'plugins.llm',
 })

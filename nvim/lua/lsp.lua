@@ -1,16 +1,6 @@
-require('mason').setup({
-    ui = {
-        icons = {
-            package_installed = "✓",
-            package_pending = "➜",
-            package_uninstalled = "✗"
-        }
-    }
-})
-
 require('mason-lspconfig').setup({
     -- A list of servers to automatically install if they're not already installed
-    ensure_installed = { 'lua_ls', 'bashls', 'tsserver', 'yamlls', 'volar', 'html', 'phpactor' },
+    ensure_installed = { 'lua_ls', 'bashls', 'ts_ls', 'yamlls', 'volar', 'html', 'phpactor', 'volar' },
 })
 
 
@@ -37,11 +27,13 @@ local on_attach = function(client, bufnr)
 
     -- Inlay hints
     if client.server_capabilities.inlayHintProvider then
-        vim.lsp.inlay_hint.enable(bufnr, true)
+        vim.lsp.inlay_hint.enable(true, { bufnr })
         vim.keymap.set(
             "n",
-            "<leader>uh",
-            function() vim.lsp.inlay_hint.enable(0, nil) end,
+            "<leader>h",
+            function()
+                vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled({ bufnr = 0 }), { bufnr = 0 })
+            end,
             { desc = "Toggle Inlay Hints" }
         )
     end
@@ -49,11 +41,12 @@ local on_attach = function(client, bufnr)
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local bufopts = { noremap = true, silent = true, buffer = bufnr }
     vim.keymap.set("n", "gD", vim.lsp.buf.type_definition, bufopts)
+    vim.keymap.set("n", "gK", vim.lsp.buf.declaration, bufopts)
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
     vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
     vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
     vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-    vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
+    vim.keymap.set({ "n", "i" }, "<C-k>", vim.lsp.buf.signature_help, bufopts)
     vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, bufopts)
     vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, bufopts)
     vim.keymap.set("n", "<leader>wl", function()
@@ -106,3 +99,15 @@ lspconfig.bashls.setup({})
 lspconfig.phpactor.setup({
     on_attach = on_attach,
 })
+
+lspconfig.volar.setup({
+    on_attach = on_attach,
+    filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
+    init_options = {
+        vue = {
+            hybridMode = false,
+        },
+    },
+})
+
+lspconfig.ts_ls.setup({})
