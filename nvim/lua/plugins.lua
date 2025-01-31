@@ -349,7 +349,6 @@ require("lazy").setup({
     { "hrsh7th/cmp-buffer",                  dependencies = { "nvim-cmp" } }, -- buffer auto-completion
     { "hrsh7th/cmp-path",                    dependencies = { "nvim-cmp" } }, -- path auto-completion
     { "hrsh7th/cmp-cmdline",                 dependencies = { "nvim-cmp" } }, -- cmdline auto-completion
-    { "saadparwaiz1/cmp_luasnip" },
     -- {
     --     -- Code completion with AI
     --     'tzachar/cmp-ai',
@@ -376,15 +375,6 @@ require("lazy").setup({
     --         })
     --     end
     -- },
-    -- Code snippet engine
-    {
-        "L3MON4D3/LuaSnip",
-        version = "v2.*",
-        dependencies = { "rafamadriz/friendly-snippets" },
-        config = function()
-            require("luasnip.loaders.from_vscode").lazy_load()
-        end
-    },
     -- LSP manager
     {
         "williamboman/mason.nvim",
