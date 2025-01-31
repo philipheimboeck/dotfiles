@@ -1,4 +1,8 @@
+alias ..="cd .."
+alias ...="cd ../.."
+alias .-="cd -"
 
+# GIT
 alias g="git"
 alias ga="git add"
 
@@ -21,3 +25,5 @@ alias gpu="git push"
 alias gpuo="git push -u origin HEAD"
 
 alias gm="git merge --ff-only"
+
+

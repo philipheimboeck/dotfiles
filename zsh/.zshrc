@@ -32,7 +32,7 @@ OS_FILE="$HOME/.dotfiles/zsh/$(uname -s)/.zshrc"
 if [ -f "$OS_FILE" ]; then
   source $OS_FILE
 fi
-source "$HOME/.dotfiles/zsh/git-aliases"
+source "$HOME/.dotfiles/aliases"
 
 
 # Plugins
