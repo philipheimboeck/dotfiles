@@ -23,7 +23,7 @@ local hl = vim.api.nvim_set_hl
 
 hl(0, 'Directory', { fg = colors.cornflowerBlue });
 
-hl(0, 'VertSplit', { fg = colors.doveGray })
+hl(0, 'VertSplit', { fg = colors.dustyGray })
 
 hl(0, 'TabLine', { fg = colors.doveGray, bg = colors.mineShaft })
 hl(0, 'TabLineFill', { bg = colors.mineShaft })
