@@ -1,11 +1,3 @@
-vim.opt.termguicolors = true
-vim.opt.title = true
-vim.opt.cursorline = true
-vim.opt.number = true
-vim.opt.rnu = true
-vim.opt.laststatus = 3
-vim.cmd('colorscheme heimboeck')
-
 require('options')
 require('keymaps')
 require('plugins')
