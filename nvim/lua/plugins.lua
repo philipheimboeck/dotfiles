@@ -26,6 +26,27 @@ require("lazy").setup({
             },
         },
     },
+    {
+        'akinsho/bufferline.nvim',
+        version = "*",
+        dependencies = 'nvim-tree/nvim-web-devicons',
+        config = function()
+            require('bufferline').setup({
+                options = {
+                    mode = 'buffers',
+                    offsets = {
+                        {
+                            filetype = 'neo-tree',
+                            text = 'File Explorer',
+                            separator = true,
+                            text_align = 'left'
+                        }
+                    },
+                    diagnostics = "nvim_lsp",
+                }
+            })
+        end
+    },
     { "Bilal2453/luvit-meta",                        lazy = true }, -- optional `vim.uv` typings
     {                                                               -- optional completion source for require statements and module annotations
         "hrsh7th/nvim-cmp",
