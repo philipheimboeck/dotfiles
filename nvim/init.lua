@@ -91,3 +91,4 @@ function LspPhpactorBlackfireFinish()
     local _, _ = vim.lsp.buf_request_sync(0, "blackfire/finish", {})
 end
 require('namespace')
+require('bufferclose')
