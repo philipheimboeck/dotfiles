@@ -1,7 +1,3 @@
-vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
-
-vim.g.mapleader = " "
-
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
     vim.fn.system({
@@ -51,7 +47,6 @@ require("lazy").setup({
     {
         "j-hui/fidget.nvim",
     },
-    "easymotion/vim-easymotion",
     {
         "norcalli/nvim-colorizer.lua",
         config = function()
