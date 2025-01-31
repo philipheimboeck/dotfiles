@@ -107,7 +107,7 @@ require("lazy").setup({
     {
         'nvim-telescope/telescope.nvim',
         tag = '0.1.8', -- or branch = '0.1.x',
-        dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope-smart-history.nvim' },
+        dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope-smart-history.nvim', "nvim-telescope/telescope-live-grep-args.nvim", },
         config = function()
             local telescope = require('telescope')
             telescope.setup({
@@ -167,17 +167,20 @@ require("lazy").setup({
                     }
                 }
             })
+            telescope.load_extension("live_grep_args")
+            telescope.load_extension('smart_history')
             local builtin = require('telescope.builtin')
-            vim.keymap.set('n', '<leader>F', builtin.resume, {})
-            vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
-            vim.keymap.set('n', '<leader>fF', builtin.oldfiles, {})
-            vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
-            vim.keymap.set('n', '<leader>fG', builtin.git_status, {})
-            vim.keymap.set('n', '<leader>fd', builtin.lsp_references, {})
-            vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-            vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
 
-            require('telescope').load_extension('smart_history')
+            vim.keymap.set('n', '<leader>F', builtin.resume, { desc = 'Resume search' })
+            vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Find files...' })
+            vim.keymap.set('n', '<leader>fF', builtin.oldfiles, { desc = 'Find recent files...' })
+            -- vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Find in files...' })
+            vim.keymap.set('n', '<leader>fg', telescope.extensions.live_grep_args.live_grep_args,
+                { desc = 'Find in files' })
+            vim.keymap.set('n', '<leader>fG', builtin.git_status, { desc = 'Find changed files...' })
+            vim.keymap.set('n', '<leader>fd', builtin.lsp_references, { desc = 'Find LSP references...' })
+            vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Find buffers...' })
+            vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find help...' })
         end
     },
     { 'nvim-telescope/telescope-smart-history.nvim', dependencies = { 'kkharji/sqlite.lua' } },
