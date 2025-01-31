@@ -169,6 +169,7 @@ require("lazy").setup({
             })
             telescope.load_extension("live_grep_args")
             telescope.load_extension('smart_history')
+
             local builtin = require('telescope.builtin')
 
             vim.keymap.set('n', '<leader>F', builtin.resume, { desc = 'Resume search' })
@@ -311,22 +312,25 @@ require("lazy").setup({
                     end)
 
                     -- Actions
-                    map('n', '<leader>hs', gitsigns.stage_hunk)
-                    map('n', '<leader>hr', gitsigns.reset_hunk)
-                    map('v', '<leader>hs', function() gitsigns.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
-                    map('v', '<leader>hr', function() gitsigns.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end)
-                    map('n', '<leader>hS', gitsigns.stage_buffer)
-                    map('n', '<leader>hu', gitsigns.undo_stage_hunk)
-                    map('n', '<leader>hR', gitsigns.reset_buffer)
-                    map('n', '<leader>hp', gitsigns.preview_hunk)
-                    map('n', '<leader>hb', function() gitsigns.blame_line { full = true } end)
-                    map('n', '<leader>tb', gitsigns.toggle_current_line_blame)
-                    map('n', '<leader>hd', gitsigns.diffthis)
-                    map('n', '<leader>hD', function() gitsigns.diffthis('~') end)
-                    map('n', '<leader>td', gitsigns.toggle_deleted)
+                    map('n', '<leader>hs', gitsigns.stage_hunk, { desc = 'Git stage hunk' })
+                    map('n', '<leader>hr', gitsigns.reset_hunk, { desc = 'Git reset hunk' })
+                    map('v', '<leader>hs', function() gitsigns.stage_hunk { vim.fn.line('.'), vim.fn.line('v') } end,
+                        { desc = 'Git stage hunk' })
+                    map('v', '<leader>hr', function() gitsigns.reset_hunk { vim.fn.line('.'), vim.fn.line('v') } end,
+                        { desc = 'Git reset hunk' })
+                    map('n', '<leader>hS', gitsigns.stage_buffer, { desc = 'Git stage buffer' })
+                    map('n', '<leader>hR', gitsigns.reset_buffer, { desc = 'Git reset buffer' })
+                    map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'Git preview hunk' })
+                    map('n', '<leader>hb', function() gitsigns.blame_line { full = true } end,
+                        { desc = 'Git blame line' })
+                    map('n', '<leader>tb', gitsigns.toggle_current_line_blame, { desc = 'Git toggle current line blame' })
+                    map('n', '<leader>hd', gitsigns.diffthis, { desc = 'Git diff' })
+                    map('n', '<leader>hD', function() gitsigns.diffthis('~') end, { desc = 'Git diff current file' })
+                    map('n', '<leader>hp', gitsigns.preview_hunk, { desc = 'Git preview hunk' })
+                    map('n', '<leader>hi', gitsigns.preview_hunk_inline, { desc = 'Git preview hunk inline' })
 
                     -- Text object
-                    map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>')
+                    map({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<CR>', { desc = 'Git select hunk' })
                 end
             });
         end
@@ -404,7 +408,7 @@ require("lazy").setup({
             -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
         },
         config = function()
-            vim.keymap.set('n', '<leader>fr', ':Neotree reveal<CR>', {})
+            vim.keymap.set('n', '<leader>fr', ':Neotree reveal<CR>', { desc = 'Neotree reveal' })
 
             require('neo-tree').setup({
                 filesystem = {
@@ -506,6 +510,26 @@ require("lazy").setup({
         end,
     },
     -- Seperate plugin files
+    {
+        "folke/which-key.nvim",
+        event = "VeryLazy",
+        opts = {
+            preset = 'helix',
+            spec = {
+                { '<leader>f', group = 'file' },
+                { '<leader>h', group = 'Git' },
+            }
+        },
+        keys = {
+            {
+                "<leader>?",
+                function()
+                    require("which-key").show({ global = false })
+                end,
+                desc = "Buffer Local Keymaps (which-key)",
+            },
+        },
+    },
     require 'plugins.dap',
     -- require 'plugins.llm',
 })
