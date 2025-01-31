@@ -13,13 +13,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
     {
-        "ellisonleao/dotenv.nvim",
-        config = function()
-            require('dotenv').setup({
-                enable_on_load = true,
-                verbose = false,
-            })
-        end
     },
     {
         "folke/lazydev.nvim",

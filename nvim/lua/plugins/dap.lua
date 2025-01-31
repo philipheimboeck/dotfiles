@@ -7,6 +7,9 @@ return {
         -- Required dependency for nvim-dap-ui
         'nvim-neotest/nvim-nio',
 
+        -- For virtual text
+        'theHamsta/nvim-dap-virtual-text',
+
         -- Installs the debug adapters for you
         'williamboman/mason.nvim',
         'jay-babu/mason-nvim-dap.nvim',
@@ -15,7 +18,7 @@ return {
         local dap = require 'dap'
         local dapui = require 'dapui'
 
-        require('mason-nvim-dap').setup {
+        require('mason-nvim-dap').setup({
             -- Makes a best effort to setup the various debuggers with
             -- reasonable debug configurations
             automatic_installation = true,
@@ -30,8 +33,9 @@ return {
                 -- Update this to ensure that you have the debuggers for the langs you want
                 'delve',
             },
-        }
+        })
 
+        dapui.setup()
 
         -- Basic debugging keymaps, feel free to change to your liking!
         vim.keymap.set('n', '<F1>', dap.step_into, { desc = 'Debug: Step Into' })
@@ -45,39 +49,26 @@ return {
             dap.set_breakpoint(vim.fn.input 'Breakpoint condition: ')
         end, { desc = 'Debug: Set Breakpoint' })
 
-        -- Dap UI setup
-        -- For more information, see |:help nvim-dap-ui|
-        dapui.setup {
-            -- Set icons to characters that are more likely to work in every terminal.
-            --    Feel free to remove or use ones that you like more! :)
-            --    Don't feel like these are good choices.
-            -- icons = { expanded = '▾', collapsed = '▸', current_frame = '*' },
-            -- controls = {
-            --    icons = {
-            --        pause = '⏸',
-            --        play = '▶',
-            --        step_into = '⏎',
-            --        step_over = '⏭',
-            --        step_out = '⏮',
-            --        step_back = 'b',
-            --        run_last = '▶▶',
-            --        terminate = '⏹',
-            --        disconnect = '⏏',
-            --    },
-            --},
-        }
-
         -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
         vim.keymap.set('n', '<F7>', dapui.toggle, { desc = 'Debug: See last session result.' })
 
-        dap.listeners.after.event_initialized['dapui_config'] = dapui.open
-        dap.listeners.before.event_terminated['dapui_config'] = dapui.close
-        dap.listeners.before.event_exited['dapui_config'] = dapui.close
+        dap.listeners.before.attach.dapui_config = function()
+            dapui.open()
+        end
+        dap.listeners.before.launch.dapui_config = function()
+            dapui.open()
+        end
+        dap.listeners.before.event_terminated.dapui_config = function()
+            dapui.close()
+        end
+        dap.listeners.before.event_exited.dapui_config = function()
+            dapui.close()
+        end
 
         -- PHP
         local xdebug_port = os.getenv('NVIM_XDEBUG_PORT') or 9003
         local xdebug_path_server = os.getenv('NVIM_XDEBUG_PATH_SERVER')
-        local xdebug_path_local = os.getenv('NVIM_XDEBUG_PATH_LOCAL')
+        local xdebug_path_local = os.getenv('NVIM_XDEBUG_PATH_LOCAL') or '${workspaceFolder}'
 
         dap.adapters.php = {
             type = 'executable',
@@ -89,14 +80,20 @@ return {
             {
                 type = 'php',
                 request = 'launch',
-                name = 'Listen for Xdebug',
+                name = 'Listen for Xdebug docker: ' .. xdebug_path_local .. ':' .. (xdebug_path_server or 'unset'),
                 port = xdebug_port,
                 pathMappings = xdebug_path_local and xdebug_path_server
                     and {
                         [xdebug_path_server] = xdebug_path_local,
                     }
                     or nil,
-            }
+            },
+            {
+                name = "listen for Xdebug local",
+                type = "php",
+                request = "launch",
+                port = xdebug_port,
+            },
         }
     end,
 }
