@@ -13,6 +13,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
     {
+        "nvim-lua/plenary.nvim",
     },
     {
         "folke/lazydev.nvim",
@@ -196,14 +197,17 @@ require("lazy").setup({
         build = ":TSUpdate",
         opts = {
             ensure_installed = {
+                "comment",
                 "bash",
                 "blade",
                 "css",
                 "diff",
                 "dockerfile",
                 "dot",
+                "editorconfig",
                 "git_config",
                 "git_rebase",
+                "gitattributes",
                 "gitcommit",
                 "gitignore",
                 "html",
@@ -213,12 +217,16 @@ require("lazy").setup({
                 "query",
                 "scss",
                 "php",
+                "php_only",
+                "fish",
                 "javascript",
                 "typescript",
+                "regex",
                 "sql",
                 "yaml",
                 "vue",
                 "xml",
+                "json",
             },
             sync_install = false,
             highlight = { enable = true, additional_vim_regex_highlighting = false },
@@ -409,11 +417,18 @@ require("lazy").setup({
         "mfussenegger/nvim-lint",
         event = { "BufReadPre", "BufNewFile" },
         config = function()
+            vim.env.ESLINT_D_PPID = vim.fn.getpid()
+
             require('lint').linters_by_ft = {
                 markdown = { 'vale' },
                 html = { 'tidy' },
                 php = { 'phpstan' },
-                typescript = { 'eslint' },
+                typescript = { 'eslint_d' },
+                javascript = { 'eslint_d' },
+                vue = { 'eslint_d' },
+                fish = { 'fish' },
+                zsh = { 'zsh' },
+                bash = { 'bash' },
             }
             require('lint').linters.phpstan.args = {
                 'analyze',
@@ -440,6 +455,9 @@ require("lazy").setup({
             conform.setup({
                 formatters_by_ft = {
                     php = { "php_cs_fixer" },
+                    typescript = { "eslint_d" },
+                    vue = { "eslint_d" },
+                    json = { "fixjson" },
                 },
                 format_on_save = {
                     lsp_fallback = true,
@@ -450,9 +468,9 @@ require("lazy").setup({
                 formatters = {
                     php_cs_fixer = {
                         condition = function(self, ctx)
-                            return not vim.fs.basename(ctx.filename):match('texts.php$')
+                            return not ctx.filename:match('.*/lang/.*.php$')
                         end,
-                    }
+                    },
                 }
             })
         end,
