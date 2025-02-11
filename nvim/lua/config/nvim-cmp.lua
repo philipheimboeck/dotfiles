@@ -4,29 +4,9 @@ local has_words_before = function()
     return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s") == nil
 end
 
-local php_namespace = require("../namespace")
 local cmp = require("cmp")
 local lspkind = require("lspkind")
-local snippets_by_filetype = {
-    php = {
-        {
-            trigger = 'php',
-            body = '<?php\n\nnamespace ${NAMESPACE};\n\n${1|class,interface,enum|} ${TM_FILENAME_BASE}\n{\n$0\n}',
-            --- @param body string
-            substitute = function(body)
-                return body:gsub("${NAMESPACE}", php_namespace.generate_namespace() or '')
-            end
-        },
-        {
-            trigger = 'ctr',
-            body = 'public function __construct() {}'
-        },
-        {
-            trigger = 'fun',
-            body = '${1|public,private,protected|} function ${2:name}($3): ${4:void}\n{$0\n}',
-        }
-    }
-}
+local snippets_by_filetype = require('../snippets')
 
 local snippets_buffer_cache = {}
 cmp.register_source('snippets', {
