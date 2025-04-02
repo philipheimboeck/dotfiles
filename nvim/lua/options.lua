@@ -34,7 +34,6 @@ vim.opt.spelloptions = 'camel'
 vim.opt.spellsuggest = 'best'
 vim.opt.spelllang = 'en,de'
 
-vim.cmd('colorscheme heimboeck')
 
 -- Rounded borders
 local _border = "single"

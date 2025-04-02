@@ -27,74 +27,16 @@ require("lazy").setup({
         },
     },
     {
-        'akinsho/bufferline.nvim',
-        version = "*",
-        dependencies = 'nvim-tree/nvim-web-devicons',
-        config = function()
-            require('bufferline').setup({
-                options = {
-                    mode = 'buffers',
-                    offsets = {
-                        {
-                            filetype = 'neo-tree',
-                            text = 'File Explorer',
-                            separator = true,
-                            text_align = 'left'
-                        }
-                    },
-                    diagnostics = "nvim_lsp",
-                }
-            })
-        end
-    },
-    { "Bilal2453/luvit-meta",                        lazy = true }, -- optional `vim.uv` typings
-    {                                                               -- optional completion source for require statements and module annotations
-        "hrsh7th/nvim-cmp",
-        opts = function(_, opts)
-            opts.sources = opts.sources or {}
-            table.insert(opts.sources, {
-                name = "lazydev",
-                group_index = 0, -- set group index to 0 to skip loading LuaLS completions
-            })
-        end,
+        "folke/tokyonight.nvim",
+        lazy = false,
+        priority = 1000,
+        opts = {},
     },
     "phpactor/phpactor",
-    {
-        "j-hui/fidget.nvim",
-    },
     {
         "norcalli/nvim-colorizer.lua",
         config = function()
             require('colorizer').setup();
-        end
-    },
-    -- Subword motions
-    {
-        "chrisgrieser/nvim-spider",
-        keys = {
-            {
-                "w",
-                "<cmd>lua require('spider').motion('w')<CR>",
-                mode = { "n", "o", "x" },
-            },
-            {
-                "e",
-                "<cmd>lua require('spider').motion('e')<CR>",
-                mode = { "n", "o", "x" },
-            },
-            {
-                "b",
-                "<cmd>lua require('spider').motion('b')<CR>",
-                mode = { "n", "o", "x" },
-            }
-        },
-        config = function()
-            -- Map original word motion (w) to W
-            vim.keymap.set({ 'n', 'o', 'x' }, 'W', 'w', { noremap = true })
-
-            require('spider').setup({
-                skipInsignificantPunctuation = false
-            })
         end
     },
     {
@@ -105,86 +47,145 @@ require("lazy").setup({
         -- this is equalent to setup({}) function
     },
     {
-        'nvim-telescope/telescope.nvim',
-        tag = '0.1.8', -- or branch = '0.1.x',
-        dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope-smart-history.nvim', "nvim-telescope/telescope-live-grep-args.nvim", },
-        config = function()
-            local telescope = require('telescope')
-            telescope.setup({
-                defaults = {
-                    -- configure to use ripgrep
-                    vimgrep_arguments = {
-                        "rg",
-                        "--follow",        -- Follow symbolic links
-                        "--hidden",        -- Search for hidden files
-                        "--no-heading",    -- Don't group matches by each file
-                        "--with-filename", -- Print the file path with the matched lines
-                        "--line-number",   -- Show line numbers
-                        "--column",        -- Show column numbers
-                        "--smart-case",    -- Smart case search
-                        "-u",              -- Disable .gitignore handling
-
-
-                        -- Exclude some patterns from search
-                        "--glob=!**/.git/*",
-                        "--glob=!**/.idea/*",
-                        "--glob=!**/.vscode/*",
-                        "--glob=!**/build/*",
-                        "--glob=!**/dist/*",
-                        "--glob=!**/yarn.lock",
-                        "--glob=!**/package-lock.json",
-                        "--glob=!**/node_modules/*",
-                        "--glob=!**/vendor/*",
+        "folke/snacks.nvim",
+        priority = 1000,
+        lazy = false,
+        ---@type snacks.Config
+        opts = {
+            animate = {},
+            bigfile = {},
+            dashboard = {},
+            gitbrowse = {
+                url_patterns = {
+                    ["github%.com"] = {
+                        branch = "/tree/{branch}",
+                        file = "/blob/{branch}/{file}#L{line_start}-L{line_end}",
+                        permalink = "/blob/{commit}/{file}#L{line_start}-L{line_end}",
+                        commit = "/commit/{commit}",
                     },
-                    history = {
-                        path = '~/.local/share/nvim/databases/telescope_history.sqlite3',
-                        limit = 100,
+                    ["gitlab%.com"] = {
+                        branch = "/-/tree/{branch}",
+                        file = "/-/blob/{branch}/{file}#L{line_start}-L{line_end}",
+                        permalink = "/-/blob/{commit}/{file}#L{line_start}-L{line_end}",
+                        commit = "/-/commit/{commit}",
+                    },
+                    ["git.abaservices.ch"] = {
+                        branch = "/-/tree/{branch}",
+                        file = "/-/blob/{branch}/{file}#L{line_start}-L{line_end}",
+                        permalink = "/-/blob/{commit}/{file}#L{line_start}-L{line_end}",
+                        commit = "/-/commit/{commit}",
                     }
                 },
-                pickers = {
-                    find_files = {
+            },
+            scroll = {},
+            explorer = {
+            },
+            picker = {
+                sources = {
+                    files = {
                         hidden = true,
-                        find_command = {
-                            "rg",
-                            "--files",
-                            "--hidden",
-                            "--glob=!**/.git/*",
-                            "--glob=!**/.idea/*",
-                            "--glob=!**/.vscode/*",
-                            "--glob=!**/build/*",
-                            "--glob=!**/dist/*",
-                            "--glob=!**/yarn.lock",
-                            "--glob=!**/package-lock.json",
-                            "--glob=!**/node_modules/*",
-                            "--glob=!**/vendor/*",
+                        ignored = true,
+                    },
+                    grep = {
+                        hidden = true,
+                        ignored = false,
+                    },
+                    explorer = {
+                        hidden = true,
+                        ignored = true,
+                        win = {
+                            input = {
+                                keys = {
+                                    ["<esc>"] = { "", mode = "n" },
+                                },
+                            },
+                            list = {
+                                keys = {
+                                    ["<esc>"] = { "", mode = "n" },
+                                },
+                            },
                         },
-                    }
-                },
-                mappings = {
-                    i = {
-                        ["<M-Down>"] = require('telescope.actions').cycle_history_next,
-                        ["<M-Up>"] = require('telescope.actions').cycle_history_prev,
+
                     }
                 }
-            })
-            telescope.load_extension("live_grep_args")
-            telescope.load_extension('smart_history')
-
-            local builtin = require('telescope.builtin')
-
-            vim.keymap.set('n', '<leader>F', builtin.resume, { desc = 'Resume search' })
-            vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Find files...' })
-            vim.keymap.set('n', '<leader>fF', builtin.oldfiles, { desc = 'Find recent files...' })
-            -- vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Find in files...' })
-            vim.keymap.set('n', '<leader>fg', telescope.extensions.live_grep_args.live_grep_args,
-                { desc = 'Find in files' })
-            vim.keymap.set('n', '<leader>fG', builtin.git_status, { desc = 'Find changed files...' })
-            vim.keymap.set('n', '<leader>fd', builtin.lsp_references, { desc = 'Find LSP references...' })
-            vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Find buffers...' })
-            vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Find help...' })
-        end
+            },
+            indent = {},
+            image = {},
+            lazygit = {},
+            notifier = {},
+            quickfile = {},
+            scope = {},
+            scratch = {},
+            statuscolumn = {},
+            words = {},
+        },
+        keys = {
+            -- Top Pickers & Explorer
+            { "<leader><space>", function() Snacks.picker.smart() end,                                   desc = "Smart Find Files" },
+            { "<leader>,",       function() Snacks.picker.buffers() end,                                 desc = "Buffers" },
+            { "<leader>/",       function() Snacks.picker.grep() end,                                    desc = "Grep" },
+            { "<leader>:",       function() Snacks.picker.command_history() end,                         desc = "Command History" },
+            { "<leader>n",       function() Snacks.picker.notifications() end,                           desc = "Notification History" },
+            { "<leader>fe",      function() Snacks.explorer.reveal() end,                                desc = "File Explorer" },
+            -- find
+            { "<leader>fb",      function() Snacks.picker.buffers() end,                                 desc = "Buffers" },
+            { "<leader>fc",      function() Snacks.picker.files({ cwd = vim.fn.stdpath("config") }) end, desc = "Find Config File" },
+            { "<leader>ff",      function() Snacks.picker.files() end,                                   desc = "Find Files" },
+            { "<leader>fg",      function() Snacks.picker.git_status() end,                              desc = "Git Status" },
+            { "<leader>fp",      function() Snacks.picker.projects() end,                                desc = "Projects" },
+            { "<leader>fr",      function() Snacks.picker.recent({ filter = { cwd = true } }) end,       desc = "Recent" },
+            -- git
+            { "<leader>gb",      function() Snacks.picker.git_branches() end,                            desc = "Git Branches" },
+            { "<leader>gl",      function() Snacks.picker.git_log() end,                                 desc = "Git Log" },
+            { "<leader>gL",      function() Snacks.picker.git_log_line() end,                            desc = "Git Log Line" },
+            { "<leader>gs",      function() Snacks.picker.git_stash() end,                               desc = "Git Stash" },
+            { "<leader>gd",      function() Snacks.picker.git_diff() end,                                desc = "Git Diff (Hunks)" },
+            { "<leader>gf",      function() Snacks.picker.git_log_file() end,                            desc = "Git Log File" },
+            { "<leader>lg",      function() Snacks.lazygit() end,                                        desc = "Open Lazygit" },
+            { "<leader>gB",      function() Snacks.gitbrowse() end,                                      desc = "Git open in remote" },
+            -- Grep
+            { "<leader>sb",      function() Snacks.picker.lines() end,                                   desc = "Buffer Lines" },
+            { "<leader>sB",      function() Snacks.picker.grep_buffers() end,                            desc = "Grep Open Buffers" },
+            { "<leader>sg",      function() Snacks.picker.grep() end,                                    desc = "Grep" },
+            { "<leader>sw",      function() Snacks.picker.grep_word() end,                               desc = "Visual selection or word", mode = { "n", "x" } },
+            -- search
+            { '<leader>s"',      function() Snacks.picker.registers() end,                               desc = "Registers" },
+            { '<leader>s/',      function() Snacks.picker.search_history() end,                          desc = "Search History" },
+            { "<leader>sa",      function() Snacks.picker.autocmds() end,                                desc = "Autocmds" },
+            { "<leader>sb",      function() Snacks.picker.lines() end,                                   desc = "Buffer Lines" },
+            { "<leader>sc",      function() Snacks.picker.command_history() end,                         desc = "Command History" },
+            { "<leader>sC",      function() Snacks.picker.commands() end,                                desc = "Commands" },
+            { "<leader>sd",      function() Snacks.picker.diagnostics() end,                             desc = "Diagnostics" },
+            { "<leader>sD",      function() Snacks.picker.diagnostics_buffer() end,                      desc = "Buffer Diagnostics" },
+            { "<leader>sh",      function() Snacks.picker.help() end,                                    desc = "Help Pages" },
+            { "<leader>sH",      function() Snacks.picker.highlights() end,                              desc = "Highlights" },
+            { "<leader>si",      function() Snacks.picker.icons() end,                                   desc = "Icons" },
+            { "<leader>sj",      function() Snacks.picker.jumps() end,                                   desc = "Jumps" },
+            { "<leader>sk",      function() Snacks.picker.keymaps() end,                                 desc = "Keymaps" },
+            { "<leader>sl",      function() Snacks.picker.loclist() end,                                 desc = "Location List" },
+            { "<leader>sm",      function() Snacks.picker.marks() end,                                   desc = "Marks" },
+            { "<leader>sM",      function() Snacks.picker.man() end,                                     desc = "Man Pages" },
+            { "<leader>sp",      function() Snacks.picker.lazy() end,                                    desc = "Search for Plugin Spec" },
+            { "<leader>sq",      function() Snacks.picker.qflist() end,                                  desc = "Quickfix List" },
+            { "<leader>sR",      function() Snacks.picker.resume() end,                                  desc = "Resume" },
+            { "<leader>su",      function() Snacks.picker.undo() end,                                    desc = "Undo History" },
+            { "<leader>uC",      function() Snacks.picker.colorschemes() end,                            desc = "Colorschemes" },
+            -- LSP
+            { "gd",              function() Snacks.picker.lsp_definitions() end,                         desc = "Goto Definition" },
+            { "gD",              function() Snacks.picker.lsp_declarations() end,                        desc = "Goto Declaration" },
+            { "gr",              function() Snacks.picker.lsp_references() end,                          nowait = true,                     desc = "References" },
+            { "gI",              function() Snacks.picker.lsp_implementations() end,                     desc = "Goto Implementation" },
+            { "gy",              function() Snacks.picker.lsp_type_definitions() end,                    desc = "Goto T[y]pe Definition" },
+            { "<leader>ss",      function() Snacks.picker.lsp_symbols() end,                             desc = "LSP Symbols" },
+            { "<leader>sS",      function() Snacks.picker.lsp_workspace_symbols() end,                   desc = "LSP Workspace Symbols" },
+            { "<leader>bd",      function() Snacks.bufdelete.delete() end,                               desc = 'Close buffer' },
+            { "<leader>ba",      function() Snacks.bufdelete.all() end,                                  desc = 'Close all buffers' },
+            { "<leader>bo",      function() Snacks.bufdelete.other() end,                                desc = 'Close other buffers' },
+            -- scratch
+            { "<leader>.",       function() Snacks.scratch() end,                                        desc = "Toggle Scratch Buffer" },
+            { "<leader>S",       function() Snacks.scratch.select() end,                                 desc = "Select Scratch Buffer" },
+        }
     },
-    { 'nvim-telescope/telescope-smart-history.nvim', dependencies = { 'kkharji/sqlite.lua' } },
     {
         'nvim-lualine/lualine.nvim',
         config = function()
@@ -211,7 +212,7 @@ require("lazy").setup({
                 options = {
                     component_separators = '|',
                     disabled_filetypes = { 'dapui_stacks', 'dapui_scopes', 'dapui_watches', 'dapui_breakpoints', 'help' },
-                    icons_enabled = false,
+                    icons_enabled = true,
                     section_separators = '',
                 }
             })
@@ -335,7 +336,6 @@ require("lazy").setup({
             });
         end
     },
-    { "lukas-reineke/indent-blankline.nvim", main = "ibl",                 opts = {} },
     -- Vscode-like pictograms
     {
         "onsails/lspkind.nvim",
@@ -349,10 +349,10 @@ require("lazy").setup({
             require("config.nvim-cmp")
         end,
     },
-    { "hrsh7th/cmp-nvim-lsp",                dependencies = { "nvim-cmp" } },
-    { "hrsh7th/cmp-buffer",                  dependencies = { "nvim-cmp" } }, -- buffer auto-completion
-    { "hrsh7th/cmp-path",                    dependencies = { "nvim-cmp" } }, -- path auto-completion
-    { "hrsh7th/cmp-cmdline",                 dependencies = { "nvim-cmp" } }, -- cmdline auto-completion
+    { "hrsh7th/cmp-nvim-lsp", dependencies = { "nvim-cmp" } },
+    { "hrsh7th/cmp-buffer",   dependencies = { "nvim-cmp" } }, -- buffer auto-completion
+    { "hrsh7th/cmp-path",     dependencies = { "nvim-cmp" } }, -- path auto-completion
+    { "hrsh7th/cmp-cmdline",  dependencies = { "nvim-cmp" } }, -- cmdline auto-completion
     -- {
     --     -- Code completion with AI
     --     'tzachar/cmp-ai',
@@ -397,71 +397,6 @@ require("lazy").setup({
     },
     "williamboman/mason-lspconfig.nvim",
     "neovim/nvim-lspconfig",
-    -- File Tree
-    {
-        "nvim-neo-tree/neo-tree.nvim",
-        version = "*",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            "nvim-tree/nvim-web-devicons", -- not strictly required, but recommended
-            "MunifTanjim/nui.nvim",
-            -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
-        },
-        config = function()
-            vim.keymap.set('n', '<leader>fr', ':Neotree reveal<CR>', { desc = 'Neotree reveal' })
-
-            local function getTelescopeOpts(state, path)
-                return {
-                    cwd = path,
-                    search_dirs = { path },
-                    attach_mappings = function(prompt_bufnr, map)
-                        local actions = require "telescope.actions"
-                        actions.select_default:replace(function()
-                            actions.close(prompt_bufnr)
-                            local action_state = require "telescope.actions.state"
-                            local selection = action_state.get_selected_entry()
-                            local filename = selection.filename
-                            if (filename == nil) then
-                                filename = selection[1]
-                            end
-                            -- any way to open the file without triggering auto-close event of neo-tree?
-                            require("neo-tree.sources.filesystem").navigate(state, state.path, filename)
-                        end)
-                        return true
-                    end
-                }
-            end
-
-            require('neo-tree').setup({
-                filesystem = {
-                    filtered_items = {
-                        visible = true,
-                    },
-                    follow_current_file = { enabled = true },
-                    use_libuv_file_watcher = true,
-                    window = {
-                        mappings = {
-                            ["g"] = "telescope_grep",
-                            ["f"] = "telescope_find",
-                        }
-                    }
-                },
-                commands = {
-                    telescope_find = function(state)
-                        local node = state.tree:get_node()
-                        local path = node:get_id()
-                        require('telescope.builtin').find_files(getTelescopeOpts(state, path))
-                    end,
-                    telescope_grep = function(state)
-                        local node = state.tree:get_node()
-                        local path = node:get_id()
-                        require('telescope.builtin').live_grep(getTelescopeOpts(state, path))
-                    end,
-                },
-                buffers = { follow_current_file = { enabled = true } }
-            })
-        end,
-    },
     {
         's1n7ax/nvim-window-picker',
         name = 'window-picker',
@@ -537,12 +472,6 @@ require("lazy").setup({
             })
         end,
     },
-    {
-        "iamcco/markdown-preview.nvim",
-        cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
-        ft = { "markdown" },
-        build = function() vim.fn["mkdp#util#install"]() end,
-    },
     { "RRethy/vim-illuminate" },
     {
         "tpope/vim-fugitive",
@@ -552,26 +481,6 @@ require("lazy").setup({
               let g:fugitive_gitlab_domains = ['git.abaservices.ch']
             ]])
         end,
-    },
-    {
-        "kdheepak/lazygit.nvim",
-        lazy = true,
-        cmd = {
-            "LazyGit",
-            "LazyGitConfig",
-            "LazyGitCurrentFile",
-            "LazyGitFilter",
-            "LazyGitFilterCurrentFile",
-        },
-        -- optional for floating window border decoration
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-        },
-        -- setting the keybinding for LazyGit with 'keys' is recommended in
-        -- order to load the plugin when the command is run for the first time
-        keys = {
-            { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
-        }
     },
     {
         "folke/which-key.nvim",
@@ -594,5 +503,46 @@ require("lazy").setup({
         },
     },
     require 'plugins.dap',
-    -- require 'plugins.llm',
+    --{
+    --    "nvim-neotest/neotest",
+    --    dependencies = {
+    --        "nvim-neotest/nvim-nio",
+    --        "nvim-lua/plenary.nvim",
+    --        "antoinemadec/FixCursorHold.nvim",
+    --        "nvim-treesitter/nvim-treesitter",
+    --        "olimorris/neotest-phpunit",
+    --        "mfussenegger/nvim-dap"
+    --    },
+    --    config = function()
+    --        require('neotest').setup({
+    --            adapters = {
+    --                require('neotest-phpunit')({
+    --                    --phpunit_cmd = function()
+    --                    -- For Laravel projects
+    --                    -- return 'vendor/bin/sail phpunit'
+    --                   --end,
+    --                    env = {
+    --                        XDEBUG_CONFIG = 'idekey=neotest',
+    --                        DB_HOST = '127.0.0.1',
+    --                        DB_PORT = 54320
+    --                    },
+    --                    dap = require('dap').configurations.php[1],
+    --                })
+    --            }
+    --        })
+    --    end,
+    --    keys = {
+    --        { "<leader>t",  "",                                                                                 desc = "+test" },
+    --        { "<leader>tt", function() require("neotest").run.run(vim.fn.expand("%")) end,                      desc = "Run File (Neotest)" },
+    --        { "<leader>tT", function() require("neotest").run.run(vim.uv.cwd()) end,                            desc = "Run All Test Files (Neotest)" },
+    --        { "<leader>tr", function() require("neotest").run.run() end,                                        desc = "Run Nearest (Neotest)" },
+    --        { "<leader>tl", function() require("neotest").run.run_last() end,                                   desc = "Run Last (Neotest)" },
+    --        { "<leader>ts", function() require("neotest").summary.toggle() end,                                 desc = "Toggle Summary (Neotest)" },
+    --        { "<leader>to", function() require("neotest").output.open({ enter = true, auto_close = true }) end, desc = "Show Output (Neotest)" },
+    --        { "<leader>tO", function() require("neotest").output_panel.toggle() end,                            desc = "Toggle Output Panel (Neotest)" },
+    --        { "<leader>tS", function() require("neotest").run.stop() end,                                       desc = "Stop (Neotest)" },
+    --        { "<leader>tw", function() require("neotest").watch.toggle(vim.fn.expand("%")) end,                 desc = "Toggle Watch (Neotest)" },
+    --    }
+    --},
+    require 'plugins.llm',
 })

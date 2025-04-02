@@ -38,12 +38,12 @@ local on_attach = function(client, bufnr)
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
     local bufopts = { noremap = true, silent = true, buffer = bufnr }
-    vim.keymap.set("n", "gD", vim.lsp.buf.type_definition, { unpack(bufopts), desc = 'Go to type definition' })
-    vim.keymap.set("n", "gK", vim.lsp.buf.declaration, { unpack(bufopts), desc = 'Go to declaration' })
-    vim.keymap.set("n", "gd", vim.lsp.buf.definition, { unpack(bufopts), desc = 'Go to definition' })
+    --vim.keymap.set("n", "gD", vim.lsp.buf.type_definition, { unpack(bufopts), desc = 'Go to type definition' })
+    --vim.keymap.set("n", "gK", vim.lsp.buf.declaration, { unpack(bufopts), desc = 'Go to declaration' })
+    --vim.keymap.set("n", "gd", vim.lsp.buf.definition, { unpack(bufopts), desc = 'Go to definition' })
     vim.keymap.set("n", "K", vim.lsp.buf.hover, { unpack(bufopts), desc = 'Hover' })
-    vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { unpack(bufopts), desc = 'See implementations' })
-    vim.keymap.set("n", "gr", vim.lsp.buf.references, { unpack(bufopts), desc = 'See references' })
+    --vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { unpack(bufopts), desc = 'See implementations' })
+    --vim.keymap.set("n", "gr", vim.lsp.buf.references, { unpack(bufopts), desc = 'See references' })
     vim.keymap.set({ "n", "i" }, "<C-k>", vim.lsp.buf.signature_help, { unpack(bufopts), desc = 'Signature help' })
     vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder,
         { unpack(bufopts), desc = 'Workspace add folder' })
@@ -100,6 +100,13 @@ lspconfig.phpactor.setup({
 lspconfig.intelephense.setup({
     on_attach = on_attach,
     capabilitites = capabilitites,
+    settings = {
+        intelephense = {
+            references = {
+                exclude = { '**/vendor/**/{Tests,tests}/**' }
+            }
+        }
+    }
 })
 
 lspconfig.volar.setup({
@@ -185,3 +192,18 @@ end
 function LspPhpactorBlackfireFinish()
     local _, _ = vim.lsp.buf_request_sync(0, "blackfire/finish", {})
 end
+
+vim.api.nvim_create_autocmd("LspProgress", {
+    ---@param ev {data: {client_id: integer, params: lsp.ProgressParams}}
+    callback = function(ev)
+        local spinner = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" }
+        vim.notify(vim.lsp.status(), "info", {
+            id = "lsp_progress",
+            title = "LSP Progress",
+            opts = function(notif)
+                notif.icon = ev.data.params.value.kind == "end" and " "
+                    or spinner[math.floor(vim.uv.hrtime() / (1e6 * 80)) % #spinner + 1]
+            end,
+        })
+    end,
+})
