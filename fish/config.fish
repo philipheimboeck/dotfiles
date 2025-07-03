@@ -1,5 +1,7 @@
 set dotfiles_root (dirname (dirname (readlink (status -f))))
 
+fish_vi_key_bindings
+
 set -U fish_color_autosuggestion 4D5566
 set -U fish_color_cancel \x2d\x2dreverse
 set -U fish_color_command 39BAE6
@@ -26,8 +28,8 @@ set -U fish_color_status red
 set -U fish_color_user brgreen
 set -U fish_color_valid_path \x2d\x2dunderline
 
-if test (uname) = 'Darwin'
-  source "$dotfiles_root/fish/Darwin/config.fish"
+if test (uname) = Darwin
+    source "$dotfiles_root/fish/Darwin/config.fish"
 end
 
 source "$dotfiles_root/aliases"
